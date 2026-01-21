@@ -1,7 +1,6 @@
 # =============================================================================
 # Abejar Cloudflared with Post-Quantum TLS
 # =============================================================================
-# 
 # Copyright 2024 Abejar. All rights reserved.
 # Contact: grant@abejar.net for full source code access.
 # =============================================================================
@@ -14,16 +13,9 @@ LABEL version="1.0.0"
 LABEL com.abejar.pqc="true"
 
 # Cloudflared supports post-quantum key agreement natively
-# This image ensures PQC is enabled and configured optimally
+# Post-quantum is enabled via CLI flag
 
-ENV TUNNEL_POST_QUANTUM=true
 ENV TUNNEL_LOGLEVEL=info
 
-# Copy PQC configuration helper
-COPY pqc-tunnel.sh.enc /opt/abejar/
-COPY entrypoint.sh /entrypoint.sh
-
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["cloudflared", "--post-quantum"]
 CMD ["tunnel", "run"]

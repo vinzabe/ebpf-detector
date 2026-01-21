@@ -1,0 +1,38 @@
+# Environment files
+.env
+*.env.local
+
+# WireGuard config (contains secrets)
+vpn-router/config/wireguard/wg0.conf
+
+# Node modules
+node_modules/
+*/node_modules/
+
+# Build outputs
+build/
+dist/
+*.pyc
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# Temporary
+tmp/
+temp/
+

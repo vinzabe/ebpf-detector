@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Create Release Archive
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          tar -czvf abejar-pqc-vpn-$VERSION.tar.gz \
+            --exclude='.git' \
+            --exclude='*.tar.gz' \
+            --exclude='*.zip' \
+            .
+          zip -r abejar-pqc-vpn-$VERSION.zip . \
+            -x '.git/*' \
+            -x '*.tar.gz' \
+            -x '*.zip'
+            
+      - name: Validate Docker Compose
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            abejar-pqc-vpn-*.tar.gz
+            abejar-pqc-vpn-*.zip
+          generate_release_notes: true
+          body: |
+            ## Abejar PQC VPN Router
+            
+            Post-Quantum Cryptography VPN Router with Kyber-1024
+            
+            ### Quick Start
+            ```bash
+            # Download and extract
+            tar -xzvf abejar-pqc-vpn-${{ github.ref_name }}.tar.gz
+            cd abejar-pqc-vpn-*
+            
+            # Configure
+            ./scripts/setup.sh
+            
+            # Start
+            docker compose up -d
+            ```
+            
+            ### Documentation
+            - [Installation Guide](docs/INSTALLATION.md)
+            - [Security](SECURITY.md)
+            - [Troubleshooting](docs/TROUBLESHOOTING.md)
+            
+            ### Contact
+            Enterprise support: grant@abejar.net
