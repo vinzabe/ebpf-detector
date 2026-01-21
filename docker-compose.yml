@@ -1,0 +1,101 @@
+# =============================================================================
+# Abejar Post-Quantum Cryptography VPN Router
+# Kyber-1024 Native Implementation
+# =============================================================================
+# 
+# Copyright 2024 Abejar. All rights reserved.
+# Contact: grant@abejar.net
+#
+# This is the main orchestration file for the PQC VPN Router.
+# For full source code access, contact grant@abejar.net
+# =============================================================================
+
+services:
+  # ===========================================================================
+  # VPN Router with Native Kyber-1024 Support
+  # ===========================================================================
+  vpn-router:
+    image: ghcr.io/vinzabe/abejar-pqc-cloudflared:latest
+    container_name: vpn-router
+    hostname: vpn-router
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+      # Post-Quantum Cryptography Settings
+      - PQC_ENABLED=${PQC_ENABLED:-true}
+      - PQC_ALGORITHM=${PQC_ALGORITHM:-kyber1024}
+      - PQC_HYBRID_MODE=${PQC_HYBRID_MODE:-true}
+      - PQC_KEY_ROTATION_HOURS=${PQC_KEY_ROTATION_HOURS:-24}
+      # VPN Settings
+      - VPN_INTERFACE=${VPN_INTERFACE:-wg0}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
+    volumes:
+      - ./vpn-router/config/wireguard:/config/wg_confs:rw
+      - ./vpn-router/config/routing:/config/routing:ro
+      - /lib/modules:/lib/modules:ro
+    ports:
+      # Localhost-only bindings for Cloudflare Tunnel
+      - "127.0.0.1:${APP_PORT_START:-10091}-${APP_PORT_END:-10100}:${APP_PORT_START:-10091}-${APP_PORT_END:-10100}"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+    networks:
+      vpn-network:
+        ipv4_address: ${VPN_ROUTER_IP:-172.25.0.2}
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    labels:
+      - "com.abejar.pqc=true"
+      - "com.abejar.pqc.algorithm=kyber1024"
+      - "com.abejar.pqc.version=1.0.0"
+
+  # ===========================================================================
+  # Cloudflare Tunnel with PQC TLS
+  # ===========================================================================
+  cloudflared:
+    image: ghcr.io/vinzabe/abejar-cloudflared-pqc:latest
+    container_name: cloudflare-tunnel
+    # Route tunnel traffic through VPN for complete anonymity
+    network_mode: "service:vpn-router"
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+      - TUNNEL_LOGLEVEL=${CF_LOG_LEVEL:-info}
+      # Post-Quantum TLS Settings
+      - TUNNEL_POST_QUANTUM=${CF_TUNNEL_PQC:-true}
+    depends_on:
+      vpn-router:
+        condition: service_healthy
+    restart: unless-stopped
+    labels:
+      - "com.abejar.pqc=true"
+      - "com.abejar.component=cloudflared"
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  vpn-network:
+    name: abejar_vpn_network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${VPN_NETWORK_CIDR:-172.25.0.0/16}
+          gateway: ${VPN_NETWORK_GATEWAY:-172.25.0.1}
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  vpn-config:
+    name: abejar_vpn_config

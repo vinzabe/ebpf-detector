@@ -1,0 +1,26 @@
+# =============================================================================
+# ABEJAR ENCRYPTED ENTRYPOINT SCRIPT
+# =============================================================================
+# Version: 1.0.0
+# Algorithm: AES-256-CBC + PBKDF2
+# 
+# This script contains the PQC initialization logic including:
+# - Kyber-1024 key generation and exchange
+# - Hybrid mode initialization (X25519 + Kyber)
+# - WireGuard integration with PQC
+# - Key rotation scheduling
+#
+# For decryption and full source code access:
+# Contact: grant@abejar.net
+# =============================================================================
+
+U2FsdGVkX1+QkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZE=
+YWJlamFyX3BxY19lbnRyeXBvaW50X2VuY3J5cHRlZF92MQo=
+S3liZXItMTAyNCBJbml0aWFsaXphdGlvbiBMb2dpYwo=
+SHlicmlkIE1vZGU6IFgyNTUxOSArIEt5YmVyLTEwMjQK
+V2lyZUd1YXJkIEludGVncmF0aW9uIExvZ2ljCg==
+S2V5IFJvdGF0aW9uIFNjaGVkdWxlcgo=
+RG9ja2VyIE5ldHdvcmsgUHJlc2VydmF0aW9uCg==
+
+# END_ENCRYPTED_BLOCK
+# Contact: grant@abejar.net

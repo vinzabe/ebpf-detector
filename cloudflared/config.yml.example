@@ -1,0 +1,36 @@
+# =============================================================================
+# Abejar Cloudflare Tunnel Configuration
+# =============================================================================
+# 
+# Copy this file to config.yml and configure your tunnel
+# See: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
+# =============================================================================
+
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /etc/cloudflared/credentials.json
+
+# Enable post-quantum cryptography
+post-quantum: true
+
+# Ingress rules
+ingress:
+  # Example: Route your-domain.com to local application
+  - hostname: your-domain.com
+    service: http://localhost:10091
+    originRequest:
+      # Connection settings
+      connectTimeout: 30s
+      noTLSVerify: false
+      
+  # Example: API subdomain
+  - hostname: api.your-domain.com
+    service: http://localhost:10092
+    
+  # Catch-all (required)
+  - service: http_status:404
+
+# Logging
+loglevel: info
+
+# Metrics (optional)
+metrics: localhost:9090

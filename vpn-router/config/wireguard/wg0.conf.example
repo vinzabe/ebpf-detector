@@ -1,0 +1,64 @@
+# =============================================================================
+# Abejar PQC VPN Router - WireGuard Configuration Template
+# =============================================================================
+# 
+# IMPORTANT: Copy this file to wg0.conf and fill in your VPN provider credentials
+#
+# cp wg0.conf.example wg0.conf
+# nano wg0.conf
+#
+# DO NOT modify the PostUp/PostDown rules - they are required for Docker routing
+# =============================================================================
+
+[Interface]
+# Your VPN provider will give you these values
+Address = YOUR_VPN_ADDRESS/32
+PrivateKey = YOUR_PRIVATE_KEY
+
+# MTU optimized for PQC overhead (Kyber adds ~1.5KB to handshake)
+MTU = 1280
+
+# DNS servers (use your VPN provider's DNS or privacy-focused alternatives)
+DNS = 1.1.1.1, 9.9.9.9
+
+# =============================================================================
+# Docker Network Routing Rules - DO NOT MODIFY
+# =============================================================================
+# These rules preserve access to Docker networks while routing all other traffic
+# through the VPN tunnel. Modifying these will break container communication.
+
+# Preserve Docker network routing
+PostUp = ip route add 172.25.0.0/16 via 172.25.0.1 dev eth0 table 51820 2>/dev/null || true
+PostUp = ip route add 172.25.0.0/16 via 172.25.0.1 dev eth0 2>/dev/null || true
+
+# Route traffic from VPN router IP through main table
+PostUp = ip rule add from 172.25.0.2 lookup main priority 100 2>/dev/null || true
+
+# Mark incoming Docker connections for proper routing
+PostUp = nft add rule ip filter INPUT iif eth0 ct state new counter mark set 0xca6c 2>/dev/null || iptables -t mangle -A INPUT -i eth0 -m conntrack --ctstate NEW -j MARK --set-mark 0xca6c 2>/dev/null || true
+PostUp = nft add rule ip filter OUTPUT ct mark 0xca6c counter mark set 0xca6c 2>/dev/null || iptables -t mangle -A OUTPUT -m connmark --mark 0xca6c -j MARK --set-mark 0xca6c 2>/dev/null || true
+
+# Cleanup on shutdown
+PostDown = ip route del 172.25.0.0/16 via 172.25.0.1 dev eth0 table 51820 2>/dev/null || true
+PostDown = ip route del 172.25.0.0/16 via 172.25.0.1 dev eth0 2>/dev/null || true
+PostDown = ip rule del from 172.25.0.2 lookup main priority 100 2>/dev/null || true
+
+# =============================================================================
+# Peer Configuration
+# =============================================================================
+[Peer]
+# Your VPN provider will give you these values
+PublicKey = YOUR_VPN_PROVIDER_PUBLIC_KEY
+
+# Pre-shared key for additional quantum resistance (optional but recommended)
+# Generate with: wg genpsk
+PresharedKey = YOUR_PRESHARED_KEY
+
+# VPN server endpoint
+Endpoint = vpn.provider.com:51820
+
+# Route all traffic through VPN
+AllowedIPs = 0.0.0.0/0, ::/0
+
+# Keep connection alive (important for NAT traversal)
+PersistentKeepalive = 25

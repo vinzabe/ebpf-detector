@@ -1,0 +1,131 @@
+# =============================================================================
+# Abejar PQC VPN Router - SaaS Application Example
+# =============================================================================
+#
+# This example demonstrates a complete SaaS application stack routed through
+# the PQC VPN Router:
+#
+# - Frontend: React application (Nginx)
+# - Backend: FastAPI with JWT authentication
+# - Database: PostgreSQL
+# - Cache: Redis
+#
+# All external traffic from the application goes through the VPN with
+# Kyber-1024 post-quantum encryption.
+#
+# Copyright 2024 Abejar. All rights reserved.
+# Contact: grant@abejar.net
+# =============================================================================
+
+services:
+  # ===========================================================================
+  # Frontend - React Application
+  # ===========================================================================
+  frontend:
+    build: ./frontend
+    container_name: saas-frontend
+    # Route through VPN router
+    network_mode: "container:vpn-router"
+    environment:
+      - REACT_APP_API_URL=http://localhost:10092/api
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    restart: unless-stopped
+    labels:
+      - "com.abejar.app=saas-frontend"
+      - "com.abejar.port=10091"
+
+  # ===========================================================================
+  # Backend - FastAPI Application
+  # ===========================================================================
+  backend:
+    build: ./backend
+    container_name: saas-backend
+    # Route through VPN router
+    network_mode: "container:vpn-router"
+    environment:
+      # Database connection (via internal network)
+      - DATABASE_URL=postgresql://${DB_USER:-saas}:${DB_PASSWORD:-saaspass}@172.25.0.10:5432/${DB_NAME:-saasdb}
+      # Redis connection (via internal network)
+      - REDIS_URL=redis://172.25.0.11:6379/0
+      # JWT Settings
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-key-change-in-production}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRATION_HOURS=24
+      # Application Settings
+      - APP_NAME=Abejar SaaS
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    labels:
+      - "com.abejar.app=saas-backend"
+      - "com.abejar.port=10092"
+
+  # ===========================================================================
+  # Database - PostgreSQL
+  # ===========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: saas-postgres
+    environment:
+      - POSTGRES_USER=${DB_USER:-saas}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-saaspass}
+      - POSTGRES_DB=${DB_NAME:-saasdb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      vpn-network:
+        ipv4_address: 172.25.0.10
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-saas} -d ${DB_NAME:-saasdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    labels:
+      - "com.abejar.app=saas-database"
+
+  # ===========================================================================
+  # Cache - Redis
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: saas-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      vpn-network:
+        ipv4_address: 172.25.0.11
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "com.abejar.app=saas-cache"
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  vpn-network:
+    external: true
+    name: abejar_vpn_network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    name: saas_postgres_data
+  redis_data:
+    name: saas_redis_data

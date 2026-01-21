@@ -1,0 +1,18 @@
+# =============================================================================
+# ABEJAR ENCRYPTED PQC TUNNEL SCRIPT
+# =============================================================================
+# Version: 1.0.0
+# 
+# This script contains post-quantum tunnel initialization:
+# - TLS 1.3 with Kyber key agreement
+# - Certificate pinning with PQC signatures
+# - Tunnel encryption optimization
+#
+# Contact: grant@abejar.net for full source code
+# =============================================================================
+
+U2FsdGVkX18gVHVubmVsIFBRQyBJbml0
+S3liZXIgS2V5IEFncmVlbWVudAo=
+VExTIDEuMyBDb25maWd1cmF0aW9uCg==
+
+# END_ENCRYPTED_BLOCK

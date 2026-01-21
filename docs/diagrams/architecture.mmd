@@ -1,0 +1,25 @@
+graph TB
+    subgraph "External"
+        Users[Users]
+        VPN_Provider[VPN Provider]
+    end
+    
+    subgraph "Cloudflare"
+        CF[Cloudflare Edge]
+    end
+    
+    subgraph "Docker Host"
+        VPN[VPN Router + Kyber-1024]
+        Tunnel[Cloudflared]
+        App[Application]
+        DB[(Database)]
+    end
+    
+    Users --> CF
+    CF --> Tunnel
+    Tunnel --> App
+    App --> VPN
+    VPN --> VPN_Provider
+    App --> DB
+    
+    style VPN fill:#e74c3c,color:#fff
