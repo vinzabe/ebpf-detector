@@ -1,0 +1,21 @@
+{"ts": 1000, "pid": 4200, "comm": "bash", "syscall": "clone", "args": {}, "retval": 4201}
+{"ts": 1500, "pid": 4201, "comm": "bash", "syscall": "connect", "args": {"addr": "198.51.100.7:4444"}, "retval": 0}
+{"ts": 2200, "pid": 4201, "comm": "bash", "syscall": "dup2", "args": {"oldfd": 3, "newfd": 0}, "retval": 0}
+{"ts": 2300, "pid": 4201, "comm": "bash", "syscall": "dup2", "args": {"oldfd": 3, "newfd": 1}, "retval": 0}
+{"ts": 2400, "pid": 4201, "comm": "bash", "syscall": "dup2", "args": {"oldfd": 3, "newfd": 2}, "retval": 0}
+{"ts": 3000, "pid": 4201, "comm": "bash", "syscall": "execve", "args": {"filename": "/bin/bash", "argv": ["/bin/bash", "-i"]}, "retval": 0}
+{"ts": 4000, "pid": 4201, "comm": "bash", "syscall": "read", "args": {"count": 64}, "retval": 64}
+{"ts": 5000, "pid": 4201, "comm": "bash", "syscall": "write", "args": {"count": 96}, "retval": 96}
+{"ts": 6000, "pid": 4201, "comm": "bash", "syscall": "read", "args": {"count": 96}, "retval": 96}
+{"ts": 7000, "pid": 4201, "comm": "bash", "syscall": "write", "args": {"count": 200}, "retval": 200}
+{"ts": 8000, "pid": 4201, "comm": "bash", "syscall": "read", "args": {"count": 32}, "retval": 32}
+{"ts": 9000, "pid": 4201, "comm": "bash", "syscall": "write", "args": {"count": 800}, "retval": 800}
+{"ts": 1100, "pid": 999, "comm": "nginx", "syscall": "epoll_wait", "args": {}, "retval": 1}
+{"ts": 1200, "pid": 999, "comm": "nginx", "syscall": "accept4", "args": {}, "retval": 12}
+{"ts": 1300, "pid": 999, "comm": "nginx", "syscall": "read", "args": {"count": 512}, "retval": 512}
+{"ts": 1400, "pid": 999, "comm": "nginx", "syscall": "write", "args": {"count": 320}, "retval": 320}
+{"ts": 1500, "pid": 999, "comm": "nginx", "syscall": "epoll_wait", "args": {}, "retval": 1}
+{"ts": 1600, "pid": 999, "comm": "nginx", "syscall": "read", "args": {"count": 96}, "retval": 96}
+{"ts": 1700, "pid": 999, "comm": "nginx", "syscall": "write", "args": {"count": 128}, "retval": 128}
+{"ts": 1800, "pid": 999, "comm": "nginx", "syscall": "close", "args": {}, "retval": 0}
+{"ts": 1900, "pid": 999, "comm": "nginx", "syscall": "epoll_wait", "args": {}, "retval": 0}

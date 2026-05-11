@@ -1,0 +1,16 @@
+{"type": "attached_probes", "data": {"probes": 42}}
+{"type": "printf", "data": {"ts": 1000, "pid": 7700, "comm": "harvest", "syscall": "openat", "args": {"filename": "/etc/shadow"}, "retval": 5}}
+{"type": "printf", "data": {"ts": 1100, "pid": 7700, "comm": "harvest", "syscall": "read", "args": {"count": 1840}, "retval": 1840}}
+{"type": "printf", "data": {"ts": 1200, "pid": 7700, "comm": "harvest", "syscall": "close", "args": {}, "retval": 0}}
+{"type": "printf", "data": {"ts": 1300, "pid": 7700, "comm": "harvest", "syscall": "openat", "args": {"filename": "/etc/passwd"}, "retval": 5}}
+{"type": "printf", "data": {"ts": 1400, "pid": 7700, "comm": "harvest", "syscall": "read", "args": {"count": 2048}, "retval": 2048}}
+{"type": "printf", "data": {"ts": 1500, "pid": 7700, "comm": "harvest", "syscall": "openat", "args": {"filename": "/root/.ssh/id_rsa"}, "retval": 5}}
+{"type": "printf", "data": {"ts": 1600, "pid": 7700, "comm": "harvest", "syscall": "read", "args": {"count": 3300}, "retval": 3300}}
+{"type": "printf", "data": {"ts": 1700, "pid": 7700, "comm": "harvest", "syscall": "openat", "args": {"filename": "/home/alice/.aws/credentials"}, "retval": 5}}
+{"type": "printf", "data": {"ts": 1800, "pid": 7700, "comm": "harvest", "syscall": "read", "args": {"count": 480}, "retval": 480}}
+{"type": "printf", "data": {"ts": 1900, "pid": 7700, "comm": "harvest", "syscall": "openat", "args": {"filename": "/home/alice/.config/gcloud/credentials.db"}, "retval": 5}}
+{"type": "printf", "data": {"ts": 2000, "pid": 7700, "comm": "harvest", "syscall": "read", "args": {"count": 12000}, "retval": 12000}}
+{"type": "printf", "data": {"ts": 2100, "pid": 7700, "comm": "harvest", "syscall": "openat", "args": {"filename": "/var/lib/docker/.docker/config.json"}, "retval": 5}}
+{"type": "printf", "data": {"ts": 2200, "pid": 7700, "comm": "harvest", "syscall": "read", "args": {"count": 256}, "retval": 256}}
+{"type": "printf", "data": {"ts": 2300, "pid": 7700, "comm": "harvest", "syscall": "fstat", "args": {}, "retval": 0}}
+{"type": "printf", "data": {"ts": 2400, "pid": 7700, "comm": "harvest", "syscall": "close", "args": {}, "retval": 0}}
