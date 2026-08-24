@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ebpf-detector"
+version = "1.0.0"
+description = "Process-telemetry detection engine: reconstructs the process tree across exec/fork/exit and matches ancestry-aware rules (shell spawned by a web server), with honest lost-event accounting under backpressure. Pluggable event source (eBPF on Linux, replay/mock elsewhere)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "vinzabe", email = "gabejar@usa.com" }]
+keywords = ["security", "ebpf", "edr", "detection", "process-monitoring", "linux"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Information Technology",
+  "Topic :: Security",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov", "hypothesis>=6", "mypy>=1.8", "ruff>=0.5"]
+
+[project.scripts]
+ebpfdet = "ebpfdet.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/vinzabe/ebpf-detector"
+Issues = "https://github.com/vinzabe/ebpf-detector/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ebpfdet"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+packages = ["ebpfdet"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ARG"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402", "S101", "ARG001", "ARG002", "ARG005", "F841"]

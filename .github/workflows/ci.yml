@@ -1,0 +1,37 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e ".[dev]"
+      - name: ruff
+        run: ruff check src tests
+      - name: mypy (strict)
+        run: mypy --strict src/ebpfdet
+      - name: tests + coverage
+        run: pytest --cov=ebpfdet --cov-report=term-missing --cov-fail-under=85
+
+  demo-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -m pip install -e .
+      - name: replay a web-shell trace (expected to detect)
+        run: |
+          printf '%s\n' \
+            '{"type":"exec","pid":100,"ppid":1,"comm":"nginx","filename":"/usr/sbin/nginx"}' \
+            '{"type":"exec","pid":200,"ppid":100,"comm":"sh","filename":"/bin/sh"}' > /tmp/t.jsonl
+          python -m ebpfdet run /tmp/t.jsonl || true
